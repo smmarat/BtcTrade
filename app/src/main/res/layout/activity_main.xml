@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="multico.in.btctrage.MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/top_panel"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="6dp"
+        android:paddingTop="6dp"
+        android:layout_height="wrap_content">
+        <ProgressBar
+            android:layout_width="match_parent"
+            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+            android:indeterminate="true"
+            android:id="@+id/progress"
+            android:visibility="gone"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="@string/balance"
+                android:textColor="@android:color/black"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="0.00 UAH"
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="10sp"
+                android:id="@+id/bal_uah"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="0.00 BTC"
+                android:id="@+id/bal_btc"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_below="@+id/top_panel"
+        android:layout_above="@+id/both_panel"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/both_panel"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+
+            android:layout_height="70sp">
+            <Button
+                android:layout_width="match_parent"
+                android:text="@string/sell"
+                android:layout_weight="1"
+                android:background="@android:color/holo_red_light"
+                android:textColor="@android:color/white"
+                android:onClick="doSell"
+                android:layout_height="match_parent" />
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+            <Button
+                android:layout_width="match_parent"
+                android:text="@string/buy"
+                android:onClick="doBuy"
+                android:layout_weight="1"
+                android:background="@color/m_green"
+                android:textColor="@android:color/white"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_height="150sp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@color/m_red"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:text="Sell orders:"
+                    android:padding="4dp"
+                    android:textAllCaps="true"
+                    android:textColor="@android:color/white"
+                    android:layout_height="wrap_content" />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:id="@+id/order_list_sell"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@color/m_green"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:text="Buy orders:"
+                    android:textAllCaps="true"
+                    android:padding="4dp"
+                    android:textColor="@android:color/white"
+                    android:layout_height="wrap_content" />
+                <ListView
+                    android:layout_width="match_parent"
+                    android:id="@+id/order_list_buy"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

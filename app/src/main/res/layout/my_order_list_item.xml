@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:padding="6dp"
+    android:gravity="center_vertical"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_width="15sp"
+        android:id="@+id/moli_type"
+        android:layout_marginRight="12sp"
+        android:src="@android:drawable/arrow_up_float"
+        android:layout_height="30sp" />
+    <LinearLayout
+        android:layout_width="120sp"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:text="22000 UAH"
+            android:layout_marginBottom="12sp"
+            android:textSize="20sp"
+            android:id="@+id/moli_price"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="12 января 2017 г. 15:18:00"
+            android:textSize="8dp"
+            android:layout_width="match_parent"
+            android:id="@+id/moli_time"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:text="22000 UAH"
+                android:paddingBottom="4dp"
+                android:textSize="14sp"
+                android:id="@+id/moli_amt1"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:text="0.001 BTC"
+                android:textSize="14sp"
+                android:id="@+id/moli_amt2"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <ImageView
+            android:layout_marginLeft="40sp"
+            android:layout_width="30sp"
+            android:id="@+id/moli_del"
+            android:src="@android:drawable/ic_delete"
+            android:layout_height="30sp" />
+</LinearLayout>

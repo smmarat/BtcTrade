@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">BtcTrage</string>
+    <string name="create_code">Create your access code</string>
+    <string name="type_code">Type your access code</string>
+    <string name="retype_code">Retype your access code</string>
+    <string name="not_equal">Access codes are not equal</string>
+    <string name="cant_setup_pin">Can\'t setup pin</string>
+    <string name="invalid_pin">Invalid pin</string>
+    <string name="api_private_key">Api Private Key:</string>
+    <string name="enter_or_scan_from_qr">Enter or scan from QR</string>
+    <string name="btn_continue">Continue</string>
+    <string name="api_public_key">Api Public Key:</string>
+    <string name="buy">Buy</string>
+    <string name="sell">Sell</string>
+    <string name="history">History</string>
+    <string name="my_orders">My orders</string>
+    <string name="stock_orders">Stock orders</string>
+    <string name="balance">Balance:</string>
+    <string name="no_open_orders">No open orders</string>
+    <string name="err_loading_data">Error loading data. Try refresh...</string>
+    <string name="no_history">No operations today</string>
+    <string name="buy_bitcoins">Buy bitcoins</string>
+    <string name="sell_bitcoins">Sell bitcoins</string>
+    <string name="forgot_pin"><u>Forgot pin?</u></string>
+    <string name="reset_pin_msg">You can reset your pin but your stored keys will be lost. You can setup your API keys from your exchange account. Continue?</string>
+    <string name="reset_pin_title">Reset pin</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="settings">Settings</string>
+</resources>

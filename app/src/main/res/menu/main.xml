@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/menu_order"
+        android:title="@string/my_orders"
+        android:icon="@drawable/order"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/menu_history"
+        android:title="@string/history"
+        android:icon="@drawable/history"
+        app:showAsAction="always|withText"/>
+    <item android:id="@+id/menu_settings"
+        android:title="@string/settings"
+        android:icon="@drawable/settings"
+        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/menu_refresh"
+        android:title="Refresh"
+        android:icon="@drawable/sinchronize"
+        app:showAsAction="always|withText"/>
+</menu>

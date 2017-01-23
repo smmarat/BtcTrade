@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">BtcTrage</string>
+    <string name="create_code">Задайте свой код доступа</string>
+    <string name="type_code">Введите код доступа</string>
+    <string name="retype_code">Повторите ввод кода</string>
+    <string name="not_equal">Коды доступа не совпадают</string>
+    <string name="cant_setup_pin">Не удалось сохранить код</string>
+    <string name="invalid_pin">Неверный код доступа</string>
+    <string name="api_private_key">Приватный ключ API:</string>
+    <string name="enter_or_scan_from_qr">Введите или отсканируйте QR</string>
+    <string name="btn_continue">Продолжить</string>
+    <string name="api_public_key">Публичный ключ API:</string>
+    <string name="buy">Купить</string>
+    <string name="sell">Продать</string>
+    <string name="history">История</string>
+    <string name="my_orders">Мои заявки</string>
+    <string name="stock_orders">Заявки</string>
+    <string name="balance">Баланс:</string>
+    <string name="no_open_orders">Нет открытых заявок</string>
+    <string name="err_loading_data">Ошибка загрузки данных. Попробуйте обновить...</string>
+    <string name="no_history">Нет операций сегодня</string>
+    <string name="buy_bitcoins">Купить биткоины</string>
+    <string name="sell_bitcoins">Продать биткоины</string>
+    <string name="forgot_pin"><u>Забыли код?</u></string>
+    <string name="reset_pin_msg">Вы можете задать новый код, но сохранённые на устройстве ключи API будут потеряны. Вы сможете установить ключи API заново из вашего аккаунта биржи. Продолжить?</string>
+    <string name="reset_pin_title">Сброс кода</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="settings">Настройки</string>
+</resources>
