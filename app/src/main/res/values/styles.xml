@@ -9,7 +9,7 @@
     </style>
     <style name="pinBtn">
         <item name="android:background">@drawable/btn</item>
-        <item name="android:textColor">@drawable/btn_inv</item>
+        <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">20sp</item>
         <item name="android:padding">24dp</item>
         <item name="android:layout_gravity">fill</item>
