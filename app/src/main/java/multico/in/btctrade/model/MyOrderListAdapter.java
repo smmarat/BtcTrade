@@ -1,4 +1,4 @@
-package multico.in.btctrage.model;
+package multico.in.btctrade.model;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import in.multico.tool.Tool;
-import multico.in.btctrage.MyOrderActivity;
-import multico.in.btctrage.R;
+import multico.in.btctrade.MyOrderActivity;
+import multico.in.btctrade.R;
 
 /**
  * Created by Smmarat on 11.01.17.

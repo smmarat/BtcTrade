@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,21 +8,22 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import multico.in.btctrage.model.MyOrder;
-import multico.in.btctrage.model.MyOrderListAdapter;
+import multico.in.btctrade.model.MyOrder;
+import multico.in.btctrade.model.MyOrderListAdapter;
 
-public class HistoryActivity extends AppCompatActivity {
+public class MyOrderActivity extends AppCompatActivity {
 
-    private MyOrderListAdapter mola;
     private Loader loader;
+    private MyOrderListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        setContentView(R.layout.activity_my_order);
         loader = Loader.getInstance(this);
-        mola = new MyOrderListAdapter(this);
-        ((ListView)findViewById(R.id.h_list)).setAdapter(mola);
+        adapter = new MyOrderListAdapter(this);
+        ((ListView)findViewById(R.id.my_order_list)).setAdapter(adapter);
+        hideRefresh();
     }
 
     @Override
@@ -30,7 +31,7 @@ public class HistoryActivity extends AppCompatActivity {
         super.onResume();
         showProgress();
         hideRefresh();
-        loader.history(new Loader.OrderListListener() {
+        loader.ordersList(new Loader.OrderListListener() {
             @Override
             public void onSuccess(final List<MyOrder> orders) {
                 hideProgress();
@@ -38,12 +39,11 @@ public class HistoryActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (orders.size() == 0) {
-                            showMessage(getString(R.string.no_history));
+                            showMessage(getString(R.string.no_open_orders));
                             onBackPressed();
                         } else {
-                            mola.setOrders(orders);
+                            adapter.setOrders(orders);
                         }
-
                     }
                 });
             }
@@ -51,9 +51,32 @@ public class HistoryActivity extends AppCompatActivity {
             @Override
             public void onError(Exception e) {
                 e.printStackTrace();
-                showMessage(getResources().getString(R.string.err_loading_data));
+                showMessage(getString(R.string.err_loading_data));
                 hideProgress();
                 showRefresh();
+            }
+        });
+    }
+
+    public void deleteOrder(final String id) {
+        showProgress();
+        loader.orderCancel(id, new Loader.SimpleListener() {
+            @Override
+            public void onSuccess() {
+                hideProgress();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.delOrder(id);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                hideProgress();
+                e.printStackTrace();
+                showMessage(e.getMessage());
             }
         });
     }
@@ -62,7 +85,7 @@ public class HistoryActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(HistoryActivity.this, s, Toast.LENGTH_LONG).show();
+                Toast.makeText(MyOrderActivity.this, s, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -89,7 +112,7 @@ public class HistoryActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.h_refresh).setVisibility(View.VISIBLE);
+                findViewById(R.id.mord_refresh).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -98,7 +121,7 @@ public class HistoryActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.h_refresh).setVisibility(View.GONE);
+                findViewById(R.id.mord_refresh).setVisibility(View.GONE);
             }
         });
     }

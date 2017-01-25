@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,22 +8,21 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import multico.in.btctrage.model.Order;
-import multico.in.btctrage.model.OrderListAdapter;
+import multico.in.btctrade.model.MyOrder;
+import multico.in.btctrade.model.MyOrderListAdapter;
 
-public class OrdersActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity {
 
-    OrderListAdapter ola_buy, ola_sale;
+    private MyOrderListAdapter mola;
+    private Loader loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_orders);
-        ola_buy = new OrderListAdapter(this, false);
-        ((ListView)findViewById(R.id.ord_buy)).setAdapter(ola_buy);
-        ola_sale = new OrderListAdapter(this, true);
-        ((ListView)findViewById(R.id.ord_sale)).setAdapter(ola_sale);
-        hideRefresh();
+        setContentView(R.layout.activity_history);
+        loader = Loader.getInstance(this);
+        mola = new MyOrderListAdapter(this);
+        ((ListView)findViewById(R.id.h_list)).setAdapter(mola);
     }
 
     @Override
@@ -31,15 +30,20 @@ public class OrdersActivity extends AppCompatActivity {
         super.onResume();
         showProgress();
         hideRefresh();
-        Loader.loadOrders(new Loader.OrderDataListener() {
+        loader.history(new Loader.OrderListListener() {
             @Override
-            public void onSuccess(final List<Order> buy, final List<Order> sale) {
+            public void onSuccess(final List<MyOrder> orders) {
                 hideProgress();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ola_buy.setOrders(buy);
-                        ola_sale.setOrders(sale);
+                        if (orders.size() == 0) {
+                            showMessage(getString(R.string.no_history));
+                            onBackPressed();
+                        } else {
+                            mola.setOrders(orders);
+                        }
+
                     }
                 });
             }
@@ -58,7 +62,7 @@ public class OrdersActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(OrdersActivity.this, s, Toast.LENGTH_LONG).show();
+                Toast.makeText(HistoryActivity.this, s, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -85,7 +89,7 @@ public class OrdersActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.ord_refresh).setVisibility(View.VISIBLE);
+                findViewById(R.id.h_refresh).setVisibility(View.VISIBLE);
             }
         });
     }
@@ -94,7 +98,7 @@ public class OrdersActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                findViewById(R.id.ord_refresh).setVisibility(View.GONE);
+                findViewById(R.id.h_refresh).setVisibility(View.GONE);
             }
         });
     }

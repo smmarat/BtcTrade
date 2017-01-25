@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.app.Application;
 import android.content.SharedPreferences;

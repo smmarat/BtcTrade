@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,8 +23,8 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import in.multico.tool.Tool;
-import multico.in.btctrage.model.Order;
-import multico.in.btctrage.model.OrderListSimpleAdapter;
+import multico.in.btctrade.model.Order;
+import multico.in.btctrade.model.OrderListSimpleAdapter;
 
 public class MainActivity extends AppCompatActivity {
 

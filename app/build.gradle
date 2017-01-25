@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "24.0.3"
     defaultConfig {
-        applicationId "multico.in.btctrage"
+        applicationId "multico.in.btctrade"
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1

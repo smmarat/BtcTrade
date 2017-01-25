@@ -1,4 +1,4 @@
-package multico.in.btctrage.model;
+package multico.in.btctrade.model;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,8 +12,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import multico.in.btctrage.CreateOrderActivity;
-import multico.in.btctrage.R;
+import multico.in.btctrade.CreateOrderActivity;
+import multico.in.btctrade.R;
 
 /**
  * Created by Smmarat on 11.01.17.

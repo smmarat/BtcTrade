@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.content.DialogInterface;
 import android.content.Intent;

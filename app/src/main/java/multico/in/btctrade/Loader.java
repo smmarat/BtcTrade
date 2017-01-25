@@ -1,4 +1,4 @@
-package multico.in.btctrage;
+package multico.in.btctrade;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -29,8 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import in.multico.tool.Tool;
-import multico.in.btctrage.model.MyOrder;
-import multico.in.btctrage.model.Order;
+import multico.in.btctrade.model.MyOrder;
+import multico.in.btctrade.model.Order;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -395,7 +395,7 @@ public class Loader {
             ArrayList<String> xVals = new ArrayList<String>();
             float yMax = 0, yMin = Float.MAX_VALUE, close = 0;
             JSONArray arr2 = new JSONArray();
-            int size = 100;
+            int size = 200;
             for(int i = arr.length() - size; i < arr.length(); i++) {
                 arr2.put(arr.getJSONArray(i));
             }

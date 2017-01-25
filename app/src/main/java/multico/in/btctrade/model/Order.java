@@ -1,4 +1,4 @@
-package multico.in.btctrage.model;
+package multico.in.btctrade.model;
 
 import org.json.JSONObject;
 

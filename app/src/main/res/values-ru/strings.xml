@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BtcTrage</string>
+    <string name="app_name">BtcTrade</string>
     <string name="create_code">Задайте свой код доступа</string>
     <string name="type_code">Введите код доступа</string>
     <string name="retype_code">Повторите ввод кода</string>
