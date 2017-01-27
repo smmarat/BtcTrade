@@ -26,4 +26,7 @@
     <string name="reset_pin_title">Reset pin</string>
     <string name="btn_cancel">Cancel</string>
     <string name="settings">Settings</string>
+    <string name="calculate">Calculate</string>
+    <string name="buy_orders_title">Buy orders:</string>
+    <string name="sell_orders_title">Sell orders:</string>
 </resources>

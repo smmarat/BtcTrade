@@ -104,7 +104,7 @@
         android:layout_height="wrap_content">
         <Button
             android:layout_width="wrap_content"
-            android:text="Calculate"
+            android:text="@string/calculate"
             android:onClick="calculate"
             android:id="@+id/ord_calc"
             android:layout_height="wrap_content" />

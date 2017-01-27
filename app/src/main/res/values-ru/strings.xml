@@ -26,4 +26,7 @@
     <string name="reset_pin_title">Сброс кода</string>
     <string name="btn_cancel">Отмена</string>
     <string name="settings">Настройки</string>
+    <string name="calculate">Раcсчитать</string>
+    <string name="buy_orders_title">Заявки на покупку:</string>
+    <string name="sell_orders_title">Заявки на продажу:</string>
 </resources>

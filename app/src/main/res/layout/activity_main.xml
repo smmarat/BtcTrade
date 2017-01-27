@@ -103,19 +103,18 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="@color/m_red"
+                android:background="@color/colorPrimary"
                 android:layout_height="match_parent">
                 <TextView
                     android:layout_width="match_parent"
                     android:gravity="center"
-                    android:text="Sell orders:"
+                    android:text="@string/buy_orders_title"
                     android:padding="4dp"
-                    android:textAllCaps="true"
                     android:textColor="@android:color/white"
                     android:layout_height="wrap_content" />
                 <ListView
                     android:layout_width="match_parent"
-                    android:id="@+id/order_list_sell"
+                    android:id="@+id/order_list_buy"
                     android:layout_height="wrap_content" />
             </LinearLayout>
             <Space
@@ -125,19 +124,18 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:background="@color/m_green"
+                android:background="@color/colorPrimary"
                 android:layout_height="match_parent">
                 <TextView
                     android:layout_width="match_parent"
                     android:gravity="center"
-                    android:text="Buy orders:"
-                    android:textAllCaps="true"
+                    android:text="@string/sell_orders_title"
                     android:padding="4dp"
                     android:textColor="@android:color/white"
                     android:layout_height="wrap_content" />
                 <ListView
                     android:layout_width="match_parent"
-                    android:id="@+id/order_list_buy"
+                    android:id="@+id/order_list_sell"
                     android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>

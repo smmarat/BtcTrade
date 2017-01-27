@@ -62,7 +62,7 @@ public class Loader {
             @Override
             public void run() {
                 try {
-                    Tool.post(ctx, "https://btc-trade.com.ua/api/auth", new HashMap<String, String>());
+                    Tool.post(ctx, "https://btc-trade.com.ua/api/auth?is_mobile=1", new HashMap<String, String>());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -97,7 +97,7 @@ public class Loader {
             @Override
             public void run() {
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/balance", new HashMap<String, String>());
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/balance?is_mobile=1", new HashMap<String, String>());
                     JSONArray acc = new JSONObject(s).getJSONArray("accounts");
                     String uah = "0.00", btc = "0.00000";
                     for (int i = 0; i < acc.length(); i++) {
@@ -111,9 +111,9 @@ public class Loader {
                     if (count > RETRY_COUNT) bl.onError(e);
                     else {
                         try {
-                            Thread.sleep(RETRY_TIMEOUT);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                            Tool.post(ctx, "https://btc-trade.com.ua/api/auth?is_mobile=1", new HashMap<String, String>());
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
                         }
                         Log.v(TAG, "Retry getBalance " + count);
                         getBalance(count + 1, bl);
@@ -137,7 +137,7 @@ public class Loader {
                 m.put("currency1", "UAH");
                 m.put("currency", "BTC");
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/" + (buy ? "buy" : "sell") + "/btc_uah", m);
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/" + (buy ? "buy" : "sell") + "/btc_uah?is_mobile=1", m);
                     JSONObject jo = new JSONObject(s);
                     if (jo.optBoolean("status")) {
                         col.onSuccess();
@@ -164,7 +164,7 @@ public class Loader {
             public void run() {
                 Map<String, String> m = new HashMap<>();
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_orders/btc_uah", m);
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_orders/btc_uah?is_mobile=1", m);
                     JSONObject jo = new JSONObject(s);
                     List<MyOrder> orders = new ArrayList<>();
                     JSONArray arr = jo.getJSONArray("your_open_orders");
@@ -198,7 +198,7 @@ public class Loader {
             public void run() {
                 Map<String, String> m = new HashMap<>();
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_deals/btc_uah", m);
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_deals/btc_uah?is_mobile=1", m);
                     List<MyOrder> orders = new ArrayList<>();
                     JSONArray arr = new JSONArray(s);
                     for (int i = 0; i < arr.length(); i++) {
@@ -227,7 +227,7 @@ public class Loader {
             public void run() {
                 Map<String, String> m = new HashMap<>();
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/remove/order/" + id, m);
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/remove/order/" + id + "?is_mobile=1", m);
                     JSONObject jo = new JSONObject(s);
                     if (jo.optBoolean("status")) {
                         sl.onSuccess();
@@ -249,7 +249,7 @@ public class Loader {
                 Map<String, String> m = new HashMap<>();
                 m.put("amount", amt);
                 try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/" + (buy ? "ask" : "bid") + "/btc_uah", m);
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/" + (buy ? "ask" : "bid") + "/btc_uah?is_mobile=1", m);
                     JSONObject jo = new JSONObject(s);
                     rl.onSuccess(jo.optString("amount2pay", "error"));
                 } catch (Exception e) {
@@ -266,7 +266,7 @@ public class Loader {
     private static void loadOrders(final int count, final OrderDataListener odl) {
         final List<Order> sales = new ArrayList<>();
         final List<Order> buys = new ArrayList<>();
-        String url1 = "https://btc-trade.com.ua/api/trades/sell/btc_uah";
+        String url1 = "https://btc-trade.com.ua/api/trades/sell/btc_uah?is_mobile=1";
         Log.v(TAG, "~~~> " + url1);
         new OkHttpClient().newCall(new Request.Builder().url(url1).build()).enqueue(new Callback() {
             @Override
@@ -283,7 +283,7 @@ public class Loader {
                     for (int i = 0; i < list.length(); i++) {
                         sales.add(new Order(list.getJSONObject(i)));
                     }
-                    String url2 = "https://btc-trade.com.ua/api/trades/buy/btc_uah";
+                    String url2 = "https://btc-trade.com.ua/api/trades/buy/btc_uah?is_mobile=1";
                     Log.v(TAG, "~~~> " + url2);
                     new OkHttpClient().newCall(new Request.Builder().url(url2).build()).enqueue(new Callback() {
                         @Override
@@ -353,7 +353,7 @@ public class Loader {
             processResp(ctx, pref.getString(PREF_CHART_CASHE, ""), cdl);
             return;
         }
-        String url = "https://btc-trade.com.ua/api/japan_stat/high/btc_uah";
+        String url = "https://btc-trade.com.ua/api/japan_stat/high/btc_uah?is_mobile=1";
         Log.v(TAG, "~~~> " + url);
         new OkHttpClient().newCall(new Request.Builder().url(url).build()).enqueue(new Callback() {
             @Override
