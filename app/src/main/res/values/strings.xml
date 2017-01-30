@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BtcTrade</string>
+    <string name="app_name">BTCTrade</string>
     <string name="create_code">Create your access code</string>
     <string name="type_code">Type your access code</string>
     <string name="retype_code">Retype your access code</string>
@@ -29,4 +29,11 @@
     <string name="calculate">Calculate</string>
     <string name="buy_orders_title">Buy orders:</string>
     <string name="sell_orders_title">Sell orders:</string>
+    <string name="available">Available:</string>
+    <string name="err_price">Invalid price</string>
+    <string name="err_amt">Invalid amount</string>
+    <string name="order_created">Order created successfully</string>
+    <string name="order_processed">Your order has been fully processed successfully</string>
+    <string name="amount">Amount:</string>
+    <string name="equivalent">Equivalent:</string>
 </resources>

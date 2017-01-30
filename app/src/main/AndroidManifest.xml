@@ -21,11 +21,11 @@
             </intent-filter>
         </activity>
         <activity android:name="multico.in.btctrade.MainActivity" android:screenOrientation="portrait"/>
-        <activity android:name="multico.in.btctrade.OrdersActivity" android:screenOrientation="portrait"/>
-        <activity android:name="multico.in.btctrade.SettingsActivity" android:screenOrientation="portrait"/>
-        <activity android:name="multico.in.btctrade.MyOrderActivity" android:screenOrientation="portrait"/>
-        <activity android:name="multico.in.btctrade.HistoryActivity" android:screenOrientation="portrait"/>
-        <activity android:name="multico.in.btctrade.CreateOrderActivity" android:screenOrientation="portrait"/>
+        <activity android:name="multico.in.btctrade.OrdersActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
+        <activity android:name="multico.in.btctrade.SettingsActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
+        <activity android:name="multico.in.btctrade.MyOrderActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
+        <activity android:name="multico.in.btctrade.HistoryActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
+        <activity android:name="multico.in.btctrade.CreateOrderActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

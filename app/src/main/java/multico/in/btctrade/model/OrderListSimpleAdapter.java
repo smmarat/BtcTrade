@@ -69,8 +69,9 @@ public class OrderListSimpleAdapter extends BaseAdapter {
             @Override
             public void onClick(View view) {
                 ctx.startActivity(new Intent(ctx, CreateOrderActivity.class)
-                        .putExtra(CreateOrderActivity.EXTRA_OPER, sale ? CreateOrderActivity.OPER_SELL : CreateOrderActivity.OPER_BUY)
-                        .putExtra(CreateOrderActivity.EXTRA_PRICE, (float) order.getPrice()));
+                        .putExtra(CreateOrderActivity.EXTRA_OPER, sale ? CreateOrderActivity.OPER_BUY : CreateOrderActivity.OPER_SELL)
+                        .putExtra(CreateOrderActivity.EXTRA_PRICE, (float) order.getPrice())
+                        .putExtra(CreateOrderActivity.EXTRA_AMT, Tool.cutAmt(order.getAmtInCcy(), 6)));
             }
         });
         return convertView;

@@ -20,7 +20,6 @@
         android:layout_height="wrap_content"
         android:textSize="10pt"
         android:text="@string/type_code"
-        android:layout_marginTop="20dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/message" />

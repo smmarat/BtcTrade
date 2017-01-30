@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BtcTrade</string>
+    <string name="app_name">BTCTrade</string>
     <string name="create_code">Задайте свой код доступа</string>
     <string name="type_code">Введите код доступа</string>
     <string name="retype_code">Повторите ввод кода</string>
@@ -29,4 +29,11 @@
     <string name="calculate">Раcсчитать</string>
     <string name="buy_orders_title">Заявки на покупку:</string>
     <string name="sell_orders_title">Заявки на продажу:</string>
+    <string name="available">Доступно:</string>
+    <string name="err_price">Неверная цена</string>
+    <string name="err_amt">Неверная сумма</string>
+    <string name="order_created">Заявка успешно создана</string>
+    <string name="order_processed">Заявка полностью выполнена</string>
+    <string name="amount">Количество:</string>
+    <string name="equivalent">Сумма:</string>
 </resources>
