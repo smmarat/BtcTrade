@@ -86,7 +86,7 @@ public class CreateOrderActivity extends AppCompatActivity {
                 double dPrice = Double.parseDouble(orderPrice.getText().toString());
                 double rez = dAmt * dPrice;
                 calcRez.setText(new BigDecimal(rez).setScale(6, BigDecimal.ROUND_HALF_DOWN).toPlainString());
-                placeOrder.setEnabled(ava >= rez);
+                placeOrder.setEnabled(OPER_BUY.equals(currOper) ? ava >= rez : ava >= dAmt);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -124,12 +124,10 @@ public class CreateOrderActivity extends AppCompatActivity {
 
     public void placeOrder(View view) {
         try {
-            double dAmt = Double.parseDouble(orderAmt.getText().toString());
+            Double.parseDouble(orderAmt.getText().toString());
             try {
-                double dPrice = Double.parseDouble(orderPrice.getText().toString());
-                String val = OPER_BUY.equals(currOper)
-                        ? orderAmt.getText().toString()
-                        : new BigDecimal(dAmt / dPrice).setScale(6, BigDecimal.ROUND_HALF_DOWN).toPlainString();
+                Double.parseDouble(orderPrice.getText().toString());
+                String val = orderAmt.getText().toString();
                 showProgress();
                 loader.orderCreate(val, orderPrice.getText().toString(), OPER_BUY.equals(currOper), new Loader.CreateOrderListener() {
                     @Override
