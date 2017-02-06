@@ -9,6 +9,7 @@ import android.widget.EditText;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import in.multico.tool.EmptySessionException;
 import in.multico.tool.Tool;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -22,8 +23,14 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         priv = (EditText) findViewById(R.id.set_priv);
         pub = (EditText) findViewById(R.id.set_pub);
-        priv.setText(Tool.getSecret(this));
-        pub.setText(Tool.getPub(this));
+        try {
+            priv.setText(Tool.getSecret(this));
+            pub.setText(Tool.getPub(this));
+        } catch (EmptySessionException ese) {
+            ese.printStackTrace();
+            startActivity(new Intent(this, PinActivity.class));
+            finish();
+        }
     }
 
     public void scanPubKey(View view) {

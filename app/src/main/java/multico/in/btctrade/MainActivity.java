@@ -22,6 +22,7 @@ import com.github.mikephil.charting.formatter.YAxisValueFormatter;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import in.multico.tool.EmptySessionException;
 import in.multico.tool.Tool;
 import multico.in.btctrade.model.Order;
 import multico.in.btctrade.model.OrderListSimpleAdapter;
@@ -78,10 +79,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (Tool.getPub(this).length() == 0 || Tool.getSecret(this).length() == 0) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        } else {
-            refresh(true);
+        try {
+            if (Tool.getPub(this).length() == 0 || Tool.getSecret(this).length() == 0) {
+                startActivity(new Intent(this, SettingsActivity.class));
+            } else {
+                refresh(true);
+            }
+        } catch (EmptySessionException ese) {
+             ese.printStackTrace();
+            startActivity(new Intent(this, PinActivity.class));
+            finish();
         }
     }
 
