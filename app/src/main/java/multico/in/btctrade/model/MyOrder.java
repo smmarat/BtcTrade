@@ -8,15 +8,14 @@ import org.json.JSONObject;
 
 public class MyOrder {
 
-    private String amnt_base, pub_date, price, sum2, sum1, amnt_trade, type, id;
+    private String amnt_base, pub_date, price, amnt_trade, type, id;
 
     public MyOrder(JSONObject jo) {
         amnt_base = jo.optString("amnt_base");
         pub_date = jo.optString("pub_date");
         price = jo.optString("price");
-        sum2 = jo.optString("sum2", null);
-        sum1 = jo.optString("sum1", null);
         amnt_trade = jo.optString("amnt_trade");
+        amnt_base = jo.optString("amnt_base");
         type = jo.optString("type");
         id = jo.optString("id");
     }
@@ -31,14 +30,6 @@ public class MyOrder {
 
     public String getPrice() {
         return price;
-    }
-
-    public String getSum2() {
-        return sum2 == null ? amnt_trade : sum2;
-    }
-
-    public String getSum1() {
-        return sum1 == null ? amnt_base : sum1;
     }
 
     public String getAmnt_trade() {

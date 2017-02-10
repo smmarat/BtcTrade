@@ -70,8 +70,8 @@ public class MyOrderListAdapter extends BaseAdapter {
         holder.price.setTextColor("sell".equals(order.getType()) ? Color.RED : ctx.getResources().getColor(R.color.m_green));
         holder.type.setImageResource("sell".equals(order.getType()) ? android.R.drawable.arrow_down_float : android.R.drawable.arrow_up_float);
         holder.time.setText(order.getPub_date());
-        holder.amt1.setText("sell".equals(order.getType()) ? Tool.cutAmt(order.getSum1(), 6) + " BTC" : Tool.cutAmt(order.getSum1(), 3) + " UAH");
-        holder.amt2.setText("buy".equals(order.getType()) ? Tool.cutAmt(order.getSum2(), 6) + " BTC" : Tool.cutAmt(order.getSum2(), 3) + " UAH");
+        holder.amt1.setText("sell".equals(order.getType()) ? Tool.cutAmt(order.getAmnt_trade(), 6) + " BTC" : Tool.cutAmt(order.getAmnt_base(), 3) + " UAH");
+        holder.amt2.setText("buy".equals(order.getType()) ? Tool.cutAmt(order.getAmnt_trade(), 6) + " BTC" : Tool.cutAmt(order.getAmnt_base(), 3) + " UAH");
         if (ctx instanceof MyOrderActivity) {
             holder.delete.setVisibility(View.VISIBLE);
             holder.delete.setOnClickListener(new View.OnClickListener() {
