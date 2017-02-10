@@ -26,6 +26,9 @@
         <activity android:name="multico.in.btctrade.MyOrderActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
         <activity android:name="multico.in.btctrade.HistoryActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
         <activity android:name="multico.in.btctrade.CreateOrderActivity" android:screenOrientation="portrait" android:parentActivityName=".MainActivity"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ec14b4c7b2769c383040581c6f0b54021d8e50a7" />
     </application>
 
 </manifest>
