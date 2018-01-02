@@ -31,15 +31,25 @@ public class OrdersActivity extends AppCompatActivity {
         super.onResume();
         showProgress();
         hideRefresh();
-        Loader.loadOrders(new Loader.OrderDataListener() {
+        Loader.loadOrders(this, new Loader.OrderDataListener() {
             @Override
-            public void onSuccess(final List<Order> buy, final List<Order> sale) {
+            public void onBuyLoaded(final List<Order> buy) {
                 hideProgress();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         ola_buy.setOrders(buy);
-                        ola_sale.setOrders(sale);
+                    }
+                });
+            }
+
+            @Override
+            public void onSellLoaded(final List<Order> sell) {
+                hideProgress();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ola_sale.setOrders(sell);
                     }
                 });
             }

@@ -145,7 +145,7 @@ public class PinActivity extends AppCompatActivity {
     }
 
     public void doBack(View view) {
-        pin.deleteCharAt(pin.length()-1);
+        if (pin.length() > 0) pin.deleteCharAt(pin.length()-1);
         showPin();
     }
 

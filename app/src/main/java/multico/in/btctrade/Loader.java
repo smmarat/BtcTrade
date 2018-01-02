@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -44,8 +45,12 @@ import okhttp3.Response;
 public class Loader {
 
     private static final String PREF_CHART_CASHE = "chart_cashe";
-    private static final String PREF_CHART_CASHE_TIME = "chart_cashe_time";
-    private static final long CASHE_CHART_LIVE_TIME = 15 * 60 * 1000;
+    private static final String PREF_BALANCE_CASHE = "balance_cashe";
+    private static final String PREF_MY_ORDERS_CASHE = "my_orders_cashe";
+    private static final String PREF_ORDERS_BUY_CASHE = "orders_buy_cashe";
+    private static final String PREF_ORDERS_SELL_CASHE = "orders_sell_cashe";
+    private static final String PREF_HISTORY_CASHE = "orders_cashe";
+    private static final String PREF_CASHE_STATE = "chart_cashe_state";
     private static final int RETRY_COUNT = 5;
     private static final long RETRY_TIMEOUT = 1 * 1000;
 
@@ -83,9 +88,44 @@ public class Loader {
         }
     }
 
+    private static void checkCashe(final int count, final Context ctx, final CasheChangeListener ccl) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String s = Tool.post(ctx, "https://btc-trade.com.ua/time?is_mobile=1", new HashMap<String, String>());
+                    JSONObject jo = new JSONObject(s);
+                    if (!jo.has("state")) {
+                        ccl.onSuccess(true);
+                        return;
+                    }
+                    String state = jo.optString("state");
+                    final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+                    if (pref.getString(PREF_CASHE_STATE, "dtvhrt7kpasdfq1lr5").equals(state)) {
+                        ccl.onSuccess(false);
+                    } else {
+                        pref.edit().putString(PREF_CASHE_STATE, state).apply();
+                        ccl.onSuccess(true);
+                    }
+                } catch (Exception e) {
+                    if (count > RETRY_COUNT) ccl.onError(e);
+                    else {
+                        SystemClock.sleep(RETRY_TIMEOUT);
+                        Log.v(TAG, "Retry checkCashe " + count);
+                        checkCashe(count + 1, ctx, ccl);
+                    }
+                }
+            }
+        }).start();
+    }
+
     public static Loader getInstance(Context ctx) {
         if (instance == null) instance = new Loader(ctx);
         return instance;
+    }
+
+    public static void clearCashe(Context ctx) {
+        PreferenceManager.getDefaultSharedPreferences(ctx).edit().remove(PREF_CASHE_STATE).apply();
     }
 
     public void getBalance(final BalanceListener bl) {
@@ -93,34 +133,53 @@ public class Loader {
     }
 
     private void getBalance(final int count, final BalanceListener bl) {
-        new Thread(new Runnable() {
+        checkCashe(0, ctx, new CasheChangeListener() {
             @Override
-            public void run() {
-                try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/balance?is_mobile=1", new HashMap<String, String>());
-                    JSONArray acc = new JSONObject(s).getJSONArray("accounts");
-                    String uah = "0.00", btc = "0.00000";
-                    for (int i = 0; i < acc.length(); i++) {
-                        JSONObject a = acc.getJSONObject(i);
-                        if ("UAH".equals(a.optString("currency"))) uah = a.getString("balance");
-                        if ("BTC".equals(a.optString("currency"))) btc = a.getString("balance");
-                    }
-                    uah = uah.substring(0, uah.indexOf(".") + 3);
-                    bl.onSuccess(uah, btc);
-                } catch (Exception e) {
-                    if (count > RETRY_COUNT) bl.onError(e);
-                    else {
-                        try {
-                            Tool.post(ctx, "https://btc-trade.com.ua/api/auth?is_mobile=1", new HashMap<String, String>());
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
+            public void onSuccess(boolean changed) {
+                final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+                if (changed) {
+                    try {
+                        String s = Tool.post(ctx, "https://btc-trade.com.ua/api/balance?is_mobile=1", new HashMap<String, String>());
+                        processBalanceResp(s, bl);
+                        pref.edit().putString(PREF_BALANCE_CASHE, s).apply();
+                    } catch (Exception e) {
+                        if (count > RETRY_COUNT) bl.onError(e);
+                        else {
+                            try {
+                                Tool.post(ctx, "https://btc-trade.com.ua/api/auth?is_mobile=1", new HashMap<String, String>());
+                            } catch (Exception e2) {
+                                e2.printStackTrace();
+                            }
+                            Log.v(TAG, "Retry getBalance " + count);
+                            getBalance(count + 1, bl);
                         }
-                        Log.v(TAG, "Retry getBalance " + count);
-                        getBalance(count + 1, bl);
+                    }
+                } else {
+                    try {
+                        processBalanceResp(pref.getString(PREF_BALANCE_CASHE, ""), bl);
+                    } catch (JSONException e) {
+                        bl.onError(e);
                     }
                 }
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                bl.onError(e);
+            }
+        });
+    }
+
+    private void processBalanceResp(String s, BalanceListener bl) throws JSONException {
+        JSONArray acc = new JSONObject(s).getJSONArray("accounts");
+        String uah = "0.00", btc = "0.00000";
+        for (int i = 0; i < acc.length(); i++) {
+            JSONObject a = acc.getJSONObject(i);
+            if ("UAH".equals(a.optString("currency"))) uah = a.getString("balance");
+            if ("BTC".equals(a.optString("currency"))) btc = a.getString("balance");
+        }
+        uah = uah.substring(0, uah.indexOf(".") + 3);
+        bl.onSuccess(uah, btc);
     }
 
     public static float getCurrPrice() {
@@ -159,33 +218,47 @@ public class Loader {
     }
 
     private void ordersList(final int count, final OrderListListener oll) {
-        new Thread(new Runnable() {
+        checkCashe(0, ctx, new CasheChangeListener() {
             @Override
-            public void run() {
-                Map<String, String> m = new HashMap<>();
-                try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_orders/btc_uah?is_mobile=1", m);
-                    JSONObject jo = new JSONObject(s);
-                    List<MyOrder> orders = new ArrayList<>();
-                    JSONArray arr = jo.getJSONArray("your_open_orders");
-                    for (int i = 0; i < arr.length(); i++) {
-                        orders.add(new MyOrder(arr.getJSONObject(i)));
-                    }
-                    oll.onSuccess(orders);
-                } catch (Exception e) {
-                    if (count > RETRY_COUNT) oll.onError(e);
-                    else {
-                        try {
-                            Thread.sleep(RETRY_TIMEOUT);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+            public void onSuccess(boolean changed) {
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+                if (changed) {
+                    try {
+                        String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_orders/btc_uah?is_mobile=1", new HashMap<String, String>());
+                        processMyOrderResp(s, oll);
+                        pref.edit().putString(PREF_MY_ORDERS_CASHE, s).apply();
+                    } catch (Exception e) {
+                        if (count > RETRY_COUNT) oll.onError(e);
+                        else {
+                            SystemClock.sleep(RETRY_TIMEOUT);
+                            Log.v(TAG, "Retry ordersList " + count);
+                            ordersList(count + 1, oll);
                         }
-                        Log.v(TAG, "Retry ordersList " + count);
-                        ordersList(count + 1, oll);
+                    }
+                } else {
+                    try {
+                        processMyOrderResp(pref.getString(PREF_MY_ORDERS_CASHE, ""), oll);
+                    } catch (JSONException e) {
+                        oll.onError(e);
                     }
                 }
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                oll.onError(e);
+            }
+        });
+    }
+
+    private void processMyOrderResp(String s, OrderListListener oll) throws JSONException {
+        JSONObject jo = new JSONObject(s);
+        List<MyOrder> orders = new ArrayList<>();
+        JSONArray arr = jo.getJSONArray("your_open_orders");
+        for (int i = 0; i < arr.length(); i++) {
+            orders.add(new MyOrder(arr.getJSONObject(i)));
+        }
+        oll.onSuccess(orders);
     }
 
     public void history(final OrderListListener oll) {
@@ -193,33 +266,48 @@ public class Loader {
     }
 
     private void history(final int count, final OrderListListener oll) {
-        new Thread(new Runnable() {
+        checkCashe(0, ctx, new CasheChangeListener() {
             @Override
-            public void run() {
-                Map<String, String> m = new HashMap<>();
-                try {
-                    String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_deals/btc_uah?is_mobile=1", m);
-                    List<MyOrder> orders = new ArrayList<>();
-                    JSONArray arr = new JSONArray(s);
-                    for (int i = 0; i < arr.length(); i++) {
-                        orders.add(new MyOrder(arr.getJSONObject(i)));
-                    }
-                    oll.onSuccess(orders);
-                } catch (Exception e) {
-                    if (count > RETRY_COUNT) oll.onError(e);
-                    else {
-                        try {
-                            Thread.sleep(RETRY_TIMEOUT);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+            public void onSuccess(boolean changed) {
+                SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+                if (changed) {
+                    try {
+                        String s = Tool.post(ctx, "https://btc-trade.com.ua/api/my_deals/btc_uah?is_mobile=1", new HashMap<String, String>());
+                        processHistoryResp(s, oll);
+                        pref.edit().putString(PREF_HISTORY_CASHE, s).apply();
+                    } catch (Exception e) {
+                        if (count > RETRY_COUNT) oll.onError(e);
+                        else {
+                            SystemClock.sleep(RETRY_TIMEOUT);
+                            Log.v(TAG, "Retry history " + count);
+                            ordersList(count + 1, oll);
                         }
-                        Log.v(TAG, "Retry history " + count);
-                        ordersList(count + 1, oll);
+                    }
+                } else {
+                    try {
+                        processHistoryResp(pref.getString(PREF_HISTORY_CASHE, ""), oll);
+                    } catch (JSONException e) {
+                        oll.onError(e);
                     }
                 }
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                oll.onError(e);
+            }
+        });
     }
+
+    private void processHistoryResp(String s, OrderListListener oll) throws JSONException {
+        List<MyOrder> orders = new ArrayList<>();
+        JSONArray arr = new JSONArray(s);
+        for (int i = 0; i < arr.length(); i++) {
+            orders.add(new MyOrder(arr.getJSONObject(i)));
+        }
+        oll.onSuccess(orders);
+    }
+
 
     public void orderCancel(final String id, final SimpleListener sl) {
         new Thread(new Runnable() {
@@ -259,45 +347,27 @@ public class Loader {
         }).start();
     }
 
-    public static void loadOrders(final OrderDataListener odl) {
-        loadOrders(0, odl);
+    public static void loadOrders(Context ctx, final OrderDataListener odl) {
+        loadOrders(0, ctx, odl);
     }
 
-    private static void loadOrders(final int count, final OrderDataListener odl) {
-        final List<Order> sales = new ArrayList<>();
-        final List<Order> buys = new ArrayList<>();
-        String url1 = "https://btc-trade.com.ua/api/trades/sell/btc_uah?is_mobile=1";
-        Log.v(TAG, "~~~> " + url1);
-        new OkHttpClient().newCall(new Request.Builder().url(url1).build()).enqueue(new Callback() {
+    private static void loadOrders(final int count, final Context ctx, final OrderDataListener odl) {
+        checkCashe(0, ctx, new CasheChangeListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                odl.onError(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string();
-                Log.v(TAG, "<~~~ " + (s.startsWith("{") ? s : "NO JSON"));
-                try {
-                    JSONArray list = new JSONObject(s).getJSONArray("list");
-                    for (int i = 0; i < list.length(); i++) {
-                        sales.add(new Order(list.getJSONObject(i)));
-                    }
-                    String url2 = "https://btc-trade.com.ua/api/trades/buy/btc_uah?is_mobile=1";
-                    Log.v(TAG, "~~~> " + url2);
-                    new OkHttpClient().newCall(new Request.Builder().url(url2).build()).enqueue(new Callback() {
+            public void onSuccess(boolean changed) {
+                final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+                if (changed) {
+                    String url1 = "https://btc-trade.com.ua/api/trades/sell/btc_uah?is_mobile=1";
+                    Log.v(TAG, "~~~> " + url1);
+                    new OkHttpClient().newCall(new Request.Builder().url(url1).build()).enqueue(new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             if (count > RETRY_COUNT) {
                                 odl.onError(e);
                             } else {
-                                try {
-                                    Thread.sleep(RETRY_TIMEOUT);
-                                } catch (InterruptedException e1) {
-                                    e1.printStackTrace();
-                                }
+                                SystemClock.sleep(RETRY_TIMEOUT);
                                 Log.v(TAG, "Retry loadOrders " + count);
-                                loadOrders(count + 1, odl);
+                                loadOrders(count + 1, ctx, odl);
                             }
                         }
 
@@ -306,41 +376,79 @@ public class Loader {
                             String s = response.body().string();
                             Log.v(TAG, "<~~~ " + (s.startsWith("{") ? s : "NO JSON"));
                             try {
-                                JSONArray list = new JSONObject(s).getJSONArray("list");
-                                for (int i = 0; i < list.length(); i++) {
-                                    buys.add(new Order(list.getJSONObject(i)));
-                                }
-                                odl.onSuccess(buys, sales);
+                                processOrdersResp(s, true, odl);
+                                pref.edit().putString(PREF_ORDERS_SELL_CASHE, s).apply();
+                                String url2 = "https://btc-trade.com.ua/api/trades/buy/btc_uah?is_mobile=1";
+                                Log.v(TAG, "~~~> " + url2);
+                                new OkHttpClient().newCall(new Request.Builder().url(url2).build()).enqueue(new Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        if (count > RETRY_COUNT) {
+                                            odl.onError(e);
+                                        } else {
+                                            SystemClock.sleep(RETRY_TIMEOUT);
+                                            Log.v(TAG, "Retry loadOrders " + count);
+                                            loadOrders(count + 1, ctx, odl);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        String s = response.body().string();
+                                        Log.v(TAG, "<~~~ " + (s.startsWith("{") ? s : "NO JSON"));
+                                        try {
+                                            processOrdersResp(s, false, odl);
+                                            pref.edit().putString(PREF_ORDERS_BUY_CASHE, s).apply();
+                                        } catch (JSONException e) {
+                                            if (count > RETRY_COUNT) {
+                                                odl.onError(e);
+                                            } else {
+                                                SystemClock.sleep(RETRY_TIMEOUT);
+                                                Log.v(TAG, "Retry loadOrders " + count);
+                                                loadOrders(count + 1, ctx, odl);
+                                            }
+                                        }
+                                    }
+                                });
                             } catch (JSONException e) {
                                 if (count > RETRY_COUNT) {
                                     odl.onError(e);
                                 } else {
-                                    try {
-                                        Thread.sleep(RETRY_TIMEOUT);
-                                    } catch (InterruptedException e1) {
-                                        e1.printStackTrace();
-                                    }
+                                    SystemClock.sleep(RETRY_TIMEOUT);
                                     Log.v(TAG, "Retry loadOrders " + count);
-                                    loadOrders(count + 1, odl);
+                                    loadOrders(count + 1, ctx, odl);
                                 }
                             }
                         }
                     });
-                } catch (JSONException e) {
-                    if (count > RETRY_COUNT) {
+                } else {
+                    try {
+                        processOrdersResp(pref.getString(PREF_ORDERS_SELL_CASHE, ""), true, odl);
+                        processOrdersResp(pref.getString(PREF_ORDERS_BUY_CASHE, ""), false, odl);
+                    } catch (JSONException e) {
                         odl.onError(e);
-                    } else {
-                        try {
-                            Thread.sleep(RETRY_TIMEOUT);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                        Log.v(TAG, "Retry loadOrders " + count);
-                        loadOrders(count + 1, odl);
                     }
                 }
             }
+
+            @Override
+            public void onError(Exception e) {
+                odl.onError(e);
+            }
         });
+    }
+
+    private static void processOrdersResp(String s, boolean sell, OrderDataListener odl) throws JSONException {
+        final List<Order> orders = new ArrayList<>();
+        JSONArray list = new JSONObject(s).getJSONArray("list");
+        for (int i = 0; i < list.length(); i++) {
+            orders.add(new Order(list.getJSONObject(i)));
+        }
+        if (sell) {
+            odl.onSellLoaded(orders);
+        } else {
+            odl.onBuyLoaded(orders);
+        }
     }
 
     public static void loadChart(final Context ctx, final ChartDataListener cdl) {
@@ -349,44 +457,50 @@ public class Loader {
 
     private static void loadChart(final int count, final Context ctx, final ChartDataListener cdl) {
         final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
-        if (pref.contains(PREF_CHART_CASHE) && pref.getLong(PREF_CHART_CASHE_TIME, 0) + CASHE_CHART_LIVE_TIME > System.currentTimeMillis()) {
-            processResp(ctx, pref.getString(PREF_CHART_CASHE, ""), cdl);
-            return;
-        }
-        String url = "https://btc-trade.com.ua/api/japan_stat/high/btc_uah?is_mobile=1";
-        Log.v(TAG, "~~~> " + url);
-        new OkHttpClient().newCall(new Request.Builder().url(url).build()).enqueue(new Callback() {
+        checkCashe(0, ctx, new CasheChangeListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                cdl.onError(e);
+            public void onSuccess(boolean changed) {
+                if (changed) {
+                    String url = "https://btc-trade.com.ua/api/japan_stat/high/btc_uah?is_mobile=1";
+                    Log.v(TAG, "~~~> " + url);
+                    new OkHttpClient().newCall(new Request.Builder().url(url).build()).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            cdl.onError(e);
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String s = response.body().string();
+                            Log.v(TAG, "<~~~ " + (s.startsWith("{") ? s : "NO JSON"));
+                            try {
+                                new JSONObject(s).getJSONArray("trades");
+                                pref.edit().putString(PREF_CHART_CASHE, s).apply();
+                                processChartResp(ctx, s, cdl);
+                            } catch (JSONException e) {
+                                if (count > RETRY_COUNT) {
+                                    cdl.onError(e);
+                                } else {
+                                    SystemClock.sleep(RETRY_TIMEOUT);
+                                    Log.v(TAG, "Retry loadChart " + count);
+                                    loadChart(count + 1, ctx, cdl);
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    processChartResp(ctx, pref.getString(PREF_CHART_CASHE, ""), cdl);
+                }
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String s = response.body().string();
-                Log.v(TAG, "<~~~ " + (s.startsWith("{") ? s : "NO JSON"));
-                try {
-                    new JSONObject(s).getJSONArray("trades");
-                    pref.edit().putString(PREF_CHART_CASHE, s).putLong(PREF_CHART_CASHE_TIME, System.currentTimeMillis()).apply();
-                    processResp(ctx, s, cdl);
-                } catch (JSONException e) {
-                    if (count > RETRY_COUNT) {
-                        cdl.onError(e);
-                    } else {
-                        try {
-                            Thread.sleep(RETRY_TIMEOUT);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                        Log.v(TAG, "Retry loadChart " + count);
-                        loadChart(count + 1, ctx, cdl);
-                    }
-                }
+            public void onError(Exception e) {
+                cdl.onError(e);
             }
         });
     }
 
-    private static void processResp(Context ctx, String s, ChartDataListener cdl) {
+    private static void processChartResp(Context ctx, String s, ChartDataListener cdl) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy HH:mm", Locale.getDefault());
         try {
             JSONArray arr = new JSONObject(s).getJSONArray("trades");
@@ -439,6 +553,10 @@ public class Loader {
         }
     }
 
+    public interface CasheChangeListener extends BaseListener {
+        void onSuccess(boolean changed);
+    }
+
     public interface OrderListListener extends BaseListener {
         void onSuccess(List<MyOrder> orders);
     }
@@ -457,7 +575,8 @@ public class Loader {
     }
 
     public interface OrderDataListener extends BaseListener {
-        void onSuccess(List<Order> buy, List<Order> sale);
+        void onBuyLoaded(List<Order> buy);
+        void onSellLoaded(List<Order> sell);
     }
 
     public interface BalanceListener extends BaseListener {
